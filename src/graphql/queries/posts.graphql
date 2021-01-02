@@ -1,0 +1,8 @@
+query Posts($take: Int!, $cursor: Int) {
+  PaginatedPosts(take: $take, cursor: $cursor) {
+    hasMore
+    posts {
+      ...PostSnippet
+    }
+  }
+}
