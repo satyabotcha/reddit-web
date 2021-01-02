@@ -20,9 +20,9 @@ export default function Register(){
             // user failed to register -> errors returned from server
             if (data?.createUser?.errors?.field){
                 const field = data.createUser?.errors?.field
-                const message = data.createUser?.errors?.message
+                const message = data.createUser?.errors?.message as string | undefined
 
-                setError(field, {
+                setError(field as "username" | "password", {
                     message
                 })  
             }

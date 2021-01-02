@@ -18,9 +18,9 @@ export default function Login(){
             // user failed to reset password -> errors returned from server
             if (data?.resetPassword?.errors?.field){
                 const field = data.resetPassword?.errors?.field
-                const message = data.resetPassword?.errors?.message
+                const message = data.resetPassword?.errors?.message as string | undefined
 
-                setError(field, {
+                setError(field as "password", {
                     message
                 })  
             }
