@@ -16,7 +16,7 @@ import { useRouter } from 'next/router'
 
 
 export const getServerSideProps: GetServerSideProps = async ({req}) => {
-    console.log(req.headers.cookie);
+    console.log("cookie ", req.headers.cookie);
     
     const endpoint = "https://api.satyabotcha.com/graphql"
 
