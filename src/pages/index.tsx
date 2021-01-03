@@ -25,7 +25,7 @@ export default function Index(){
   const {data, isLoading, isError} =  useMeQuery({})
 
 
-  const endpoint = process.env.NEXT_PUBLIC_API_URL!
+  const endpoint = "https://api.satyabotcha.com/graphql"
 
    const graphQLClient = new GraphQLClient(endpoint, {
     credentials: 'include',
