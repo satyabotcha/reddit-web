@@ -1,5 +1,5 @@
 overwrite: true
-schema: ${NEXT_PUBLIC_API_URL}
+schema: "http://localhost:4000/graphql"
 documents: "./src/graphql/**/*.graphql"
 generates:
   src/generated/graphql.ts:
@@ -9,7 +9,7 @@ generates:
       - typescript-react-query
     config:
       fetcher:
-        endpoint: ${NEXT_PUBLIC_API_URL}
+        endpoint: "https://api.satyabotcha.com/graphql"
         fetchParams:
           credentials: "include"
           headers:
