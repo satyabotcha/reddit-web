@@ -18,7 +18,7 @@ export function fetcher<TData, TVariables>(
   variables?: TVariables
 ) {
   return async (): Promise<TData> => {
-    const res = await fetch("http://localhost:4000/graphql", {
+    const res = await fetch("https://api.satyabotcha.com/", {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
