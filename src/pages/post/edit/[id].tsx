@@ -1,82 +1,101 @@
-import router, { useRouter } from "next/router"
-import { useForm } from "react-hook-form"
-import { usePostQuery, useUpdatePostMutation } from "../../../generated/graphql"
+import router, { useRouter } from "next/router";
+import { useForm, Controller } from "react-hook-form";
+import {
+  usePostQuery,
+  useUpdatePostMutation,
+} from "../../../generated/graphql";
 import {
   FormControl,
   FormLabel,
   Input,
-  Box,
   Heading,
   Textarea,
-  Button
-} from "@chakra-ui/react"
+  Button,
+  Spinner,
+} from "@chakra-ui/react";
+import Layout from "../../../components/layout";
+import { useQueryClient } from "react-query";
 
-export default function Post () {
-    const {query} = useRouter()
-    
-    const postId = typeof query.id === "string" ? +query.id : -1
+export default function Post() {
+  const queryClient = useQueryClient();
+  const { query } = useRouter();
 
-    const {isLoading, isError, data } = usePostQuery(
-        {id: postId},
-        {enabled: postId !== -1})
-    
-    const {register, handleSubmit, reset, formState} = useForm({
-        defaultValues: {
-            title: data?.post ?  data.post.title: '',
-            content: data?.post ?  data.post.content: ''
-        }
-    })
+  const postId = typeof query.id === "string" ? +query.id : -1;
 
-    const {mutate} = useUpdatePostMutation({
-        onSettled: () => {
-            router.back()
-        }
-    })
+  const { isLoading, isError, data } = usePostQuery({ id: postId });
 
-    const onSubmit = handleSubmit( (data) => {
-        mutate({
-            id: postId,
-            content: data.content,
-            title: data.title
-        })
-        reset()
-        return
-    })
+  const { handleSubmit, reset, formState, control } = useForm();
 
-    if (isLoading) {
-     return <span>Loading...</span>
-   }
- 
-   if (isError) {
-     return <span>Something went wrong</span>
-   }
+  const { mutate } = useUpdatePostMutation({
+    onSettled: async () => {
+      await queryClient.invalidateQueries("posts");
+      router.back();
+    },
+  });
 
-   if (!data?.post){
-     return <span>Post could not be found</span>
-   }
+  const onSubmit = handleSubmit((data) => {
+    mutate({
+      id: postId,
+      content: data.content,
+      title: data.title,
+    });
+    reset();
+    return;
+  });
 
-    
-    return(
-        <>
-        <Box width="50%" mt={8} mx="25%">
+  if (isLoading) {
+    return (
+      <Layout>
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Layout>
+    );
+  }
 
-            <form onSubmit={onSubmit}>
-            <Heading mx="4">Update Post</Heading>
+  if (isError) {
+    return <Layout>Something went wrong</Layout>;
+  }
 
-            <FormControl>
-                <FormLabel>Title</FormLabel>
-                <Input type="text" ref={register({required: true})} id="title" name="title"/>
-            </FormControl>
+  if (!data?.post) {
+    return <Layout>Post could not be found</Layout>;
+  }
 
-            <FormControl>
-                <FormLabel>Content</FormLabel>
-                <Textarea type="text" ref={register({required: true})} size="md" id="content" name="content"/>
-            </FormControl>
+  return (
+    <Layout>
+      <form onSubmit={onSubmit}>
+        <Heading mx="4">Update Post</Heading>
 
-            <Button mt="4" type="submit" isLoading={formState.isSubmitting}>Update Post</Button>
-            </form>
+        <FormControl>
+          <FormLabel>Title</FormLabel>
+          <Controller
+            name="title"
+            control={control}
+            defaultValue={data.post.title}
+            rules={{ required: true }}
+            as={<Input />}
+          />
+        </FormControl>
 
-        </Box>
-        </>
-    )
+        <FormControl>
+          <FormLabel>Content</FormLabel>
+          <Controller
+            name="content"
+            control={control}
+            defaultValue={data.post.content}
+            rules={{ required: true }}
+            as={<Textarea />}
+          />
+        </FormControl>
+
+        <Button mt="4" type="submit" isLoading={formState.isSubmitting}>
+          Update Post
+        </Button>
+      </form>
+    </Layout>
+  );
 }

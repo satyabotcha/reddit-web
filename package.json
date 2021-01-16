@@ -5,6 +5,7 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
+    "debug": "NODE_OPTIONS='--inspect' next dev",
     "gen": "DOTENV_CONFIG_PATH=./.env.local graphql-codegen -r dotenv/config --config codegen.yml"
   },
   "dependencies": {
